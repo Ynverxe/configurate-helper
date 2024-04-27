@@ -35,13 +35,13 @@ public class FastConfigurationTest {
 
   private static final Path TEST_DIR = Paths.get("src/test");
   private static final Path DESTINATION_PATH = TEST_DIR.resolve("java/out/configuration.yaml");
-  private static final Path FALLBACK_RESOURCE_PATH = TEST_DIR.resolve("resources/fallback.yaml");
+  private static final Path FALLBACK_RESOURCE_PATH = Paths.get("fallback.yaml");
 
   @Test
   @Order(1)
   public void testFallbackLoad() throws Exception {
     FastConfiguration configuration = new FastConfiguration(
-      path(DESTINATION_PATH), path(FALLBACK_RESOURCE_PATH), YamlConfigurationLoader.builder()
+      path(DESTINATION_PATH), contextResource(FALLBACK_RESOURCE_PATH), YamlConfigurationLoader.builder()
         .indent(2)
     );
 
