@@ -1,8 +1,12 @@
 package com.github.ynverxe.configuratehelper.test;
 
 import com.github.ynverxe.configuratehelper.handler.FastConfiguration;
-import java.nio.file.Path;
+
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
+
+import com.github.ynverxe.configuratehelper.handler.source.URLConfigurationFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -15,17 +19,15 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import static com.github.ynverxe.configuratehelper.handler.content.ContentChannel.*;
-
 @TestMethodOrder(OrderAnnotation.class)
 public class FastConfigurationTest {
 
-  private static final ConfigurationNode FALLBACK_NODE;
+  private static final ConfigurationNode FALLBACK_NODE_EXPECT;
 
   static {
     try {
-      FALLBACK_NODE = CommentedConfigurationNode.root();
-      FALLBACK_NODE.node("node")
+      FALLBACK_NODE_EXPECT = CommentedConfigurationNode.root();
+      FALLBACK_NODE_EXPECT.node("node")
           .node("text")
           .set("Use configurate :D");
     } catch (SerializationException e) {
@@ -33,34 +35,31 @@ public class FastConfigurationTest {
     }
   }
 
-  private static final Path TEST_DIR = Paths.get("src/test");
-  private static final Path DESTINATION_PATH = TEST_DIR.resolve("java/out/configuration.yaml");
-  private static final Path FALLBACK_RESOURCE_PATH = Paths.get("fallback.yaml");
+  public static final URLConfigurationFactory FACTORY = URLConfigurationFactory.newBuilder()
+      .destContentRoot(Paths.get("src/test/java/out"))
+      .classLoader(ClassLoader.getSystemClassLoader())
+      .configurationLoaderBuilder(YamlConfigurationLoader.builder().indent(2))
+      .build();
 
   @Test
   @Order(1)
   public void testFallbackLoad() throws Exception {
-    FastConfiguration configuration = new FastConfiguration(
-      path(DESTINATION_PATH), contextResource(FALLBACK_RESOURCE_PATH), YamlConfigurationLoader.builder()
-        .indent(2)
-    );
+    FastConfiguration configuration = FACTORY.create(
+        "fallback.yaml", "configuration.yml");
 
-    assertEquals(FALLBACK_NODE, configuration.node());
+    assertEquals(FALLBACK_NODE_EXPECT, configuration.node());
   }
 
   @Test
   @Order(2)
-  public void testDestinationNotEmpty() {
-    FastConfiguration configuration = new FastConfiguration(
-        path(DESTINATION_PATH), null, YamlConfigurationLoader.builder()
-        .indent(2)
-    );
+  public void assertDestinationWrite() throws IOException {
+    FastConfiguration configuration = FACTORY.create(null, "configuration.yml");
 
-    assertEquals(FALLBACK_NODE, configuration.node());
+    assertEquals(FALLBACK_NODE_EXPECT, configuration.node());
   }
 
   @AfterAll
-  public static void clear() {
-    DESTINATION_PATH.toFile().delete();
+  public static void clear() throws IOException {
+    new File("src/test/java/out").delete();
   }
 }
