@@ -38,7 +38,7 @@ public class FastConfigurationTest {
   public static final URLConfigurationFactory FACTORY = URLConfigurationFactory.newBuilder()
       .destContentRoot(Paths.get("src/test/java/out"))
       .classLoader(ClassLoader.getSystemClassLoader())
-      .configurationLoaderBuilder(YamlConfigurationLoader.builder().indent(2))
+      .configurationLoaderFactory(() -> YamlConfigurationLoader.builder().indent(2))
       .build();
 
   @Test

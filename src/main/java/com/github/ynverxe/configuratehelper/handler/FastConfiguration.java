@@ -5,14 +5,17 @@ import com.github.ynverxe.configuratehelper.handler.content.ContentChannel;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+
+import com.github.ynverxe.configuratehelper.handler.factory.ConfigurationLoaderFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.loader.AbstractConfigurationLoader;
 
 /**
- * An extendable helper class to load/save {@link CommentedConfigurationNode}
+ * An extendable helper class to load/save {@link ConfigurationNode}
  * from/to a file more easily.
  */
 public class FastConfiguration {
@@ -23,21 +26,20 @@ public class FastConfiguration {
    * when destination content is missing.
    */
   private final @Nullable ContentProvider fallbackContentProvider;
-  private final AbstractConfigurationLoader<CommentedConfigurationNode> nodeLoader;
+  private final AbstractConfigurationLoader<? extends ConfigurationNode> nodeLoader;
   private final SourceContentProvider sourceContentProvider;
 
-  private volatile @NotNull CommentedConfigurationNode node = CommentedConfigurationNode.root();
+  private volatile @NotNull ConfigurationNode node = CommentedConfigurationNode.root();
 
   public FastConfiguration(
       @NotNull ContentChannel destinationContentProvider,
       @Nullable ContentProvider fallbackContentProvider,
-      AbstractConfigurationLoader.Builder<?, ?
-          extends AbstractConfigurationLoader<CommentedConfigurationNode>> builder) {
+      ConfigurationLoaderFactory configurationLoaderFactory) {
     this.destinationContentProvider = destinationContentProvider;
     this.fallbackContentProvider = fallbackContentProvider;
     this.sourceContentProvider = new SourceContentProvider(destinationContentProvider, fallbackContentProvider);
 
-    this.nodeLoader = builder
+    this.nodeLoader = configurationLoaderFactory.create()
         .sink(() -> new BufferedWriter(new OutputStreamWriter(destinationContentProvider.outputStream())))
         .source(this.sourceContentProvider)
         .build();
@@ -56,15 +58,15 @@ public class FastConfiguration {
   /**
    * @return The last loaded node.
    */
-  public @Nullable CommentedConfigurationNode node() {
+  public @Nullable ConfigurationNode node() {
     return node;
   }
 
   /**
-   * Attempts to load a {@link CommentedConfigurationNode}
+   * Attempts to load a {@link ConfigurationNode}
    * using the content provided by {@link SourceContentProvider}.
    */
-  public @NotNull CommentedConfigurationNode load() {
+  public @NotNull ConfigurationNode load() {
     try {
       boolean forcedDefaults = sourceContentProvider.loadFallbackResource;
 
@@ -85,13 +87,13 @@ public class FastConfiguration {
    *
    * @throws IllegalStateException If no fallback resource path was provided
    */
-  public @NotNull CommentedConfigurationNode loadFallbackContents() throws IllegalStateException {
+  public @NotNull ConfigurationNode loadFallbackContents() throws IllegalStateException {
     sourceContentProvider.checkNotNullFallback();
     sourceContentProvider.loadFallbackResource = true;
     return load();
   }
 
-  public void save(@NotNull CommentedConfigurationNode node) throws ConfigurateException {
+  public void save(@NotNull ConfigurationNode node) throws ConfigurateException {
     this.nodeLoader.save(node);
   }
 

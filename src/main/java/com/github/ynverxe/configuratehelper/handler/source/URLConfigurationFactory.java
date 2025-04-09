@@ -3,12 +3,11 @@ package com.github.ynverxe.configuratehelper.handler.source;
 import com.github.ynverxe.configuratehelper.handler.FastConfiguration;
 import com.github.ynverxe.configuratehelper.handler.content.ContentChannel;
 import com.github.ynverxe.configuratehelper.handler.content.ContentProvider;
+import com.github.ynverxe.configuratehelper.handler.factory.ConfigurationLoaderFactory;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.configurate.CommentedConfigurationNode;
-import org.spongepowered.configurate.loader.AbstractConfigurationLoader;
 
 import java.io.IOException;
 import java.net.URL;
@@ -29,18 +28,17 @@ public class URLConfigurationFactory {
 
   private final @NotNull Path fallbackContentRoot;
   private final @NotNull Path destContentRoot;
-  private final @NotNull AbstractConfigurationLoader.Builder<?, ?
-          extends AbstractConfigurationLoader<CommentedConfigurationNode>> configurationLoaderBuilder;
+  private final @NotNull ConfigurationLoaderFactory configurationLoaderFactory;
   /**
    * If not null, fallback content data will be searched into the classpath,
    * otherwise it will be searched in the system file hierarchy.
    */
   private final @Nullable ClassLoader classLoader;
 
-  public URLConfigurationFactory(@NotNull Path fallbackContentRoot, @NotNull Path destContentRoot, @NotNull AbstractConfigurationLoader.Builder<?, ? extends AbstractConfigurationLoader<CommentedConfigurationNode>> configurationLoaderBuilder, @Nullable ClassLoader classLoader) {
+  public URLConfigurationFactory(@NotNull Path fallbackContentRoot, @NotNull Path destContentRoot, @NotNull ConfigurationLoaderFactory configurationLoaderFactory, @Nullable ClassLoader classLoader) {
     this.fallbackContentRoot = fallbackContentRoot;
     this.destContentRoot = destContentRoot;
-    this.configurationLoaderBuilder = configurationLoaderBuilder;
+    this.configurationLoaderFactory = configurationLoaderFactory;
     this.classLoader = classLoader;
   }
 
@@ -62,7 +60,7 @@ public class URLConfigurationFactory {
       }
     }
 
-    return new FastConfiguration(destContent, fallbackContent, configurationLoaderBuilder);
+    return new FastConfiguration(destContent, fallbackContent, configurationLoaderFactory);
   }
 
   public @NotNull FastConfiguration create(@Nullable String pathToFallbackContent, @NotNull String destContentPath) throws IllegalStateException, IOException {
@@ -77,9 +75,8 @@ public class URLConfigurationFactory {
     return destContentRoot;
   }
 
-  public @NotNull AbstractConfigurationLoader.Builder<?, ?
-      extends AbstractConfigurationLoader<CommentedConfigurationNode>> configurationLoaderBuilder() {
-    return configurationLoaderBuilder;
+  public @NotNull ConfigurationLoaderFactory configurationLoaderFactory() {
+    return configurationLoaderFactory;
   }
 
   public @Nullable ClassLoader classLoader() {
@@ -90,7 +87,7 @@ public class URLConfigurationFactory {
     return new Builder()
         .fallbackContentRoot(fallbackContentRoot)
         .destContentRoot(destContentRoot)
-        .configurationLoaderBuilder(configurationLoaderBuilder)
+        .configurationLoaderFactory(configurationLoaderFactory)
         .classLoader(classLoader);
   }
 
@@ -105,8 +102,7 @@ public class URLConfigurationFactory {
   public static class Builder {
     private @MonotonicNonNull Path fallbackContentRoot;
     private @MonotonicNonNull Path destContentRoot;
-    private AbstractConfigurationLoader.@MonotonicNonNull Builder<?, ?
-            extends AbstractConfigurationLoader<CommentedConfigurationNode>> configurationLoaderBuilder;
+    private @MonotonicNonNull ConfigurationLoaderFactory configurationLoaderFactory;
     private @Nullable ClassLoader classLoader;
 
     public Builder fallbackContentRoot(@Nullable Path fallbackContentRoot) {
@@ -127,9 +123,8 @@ public class URLConfigurationFactory {
       return destContentRoot(Paths.get(Objects.requireNonNull(destContentRoot)));
     }
 
-    public Builder configurationLoaderBuilder(AbstractConfigurationLoader.@NotNull Builder<?, ?
-            extends AbstractConfigurationLoader<CommentedConfigurationNode>> builder) {
-      this.configurationLoaderBuilder = Objects.requireNonNull(builder);
+    public Builder configurationLoaderFactory(@NotNull ConfigurationLoaderFactory configurationLoaderFactory) {
+      this.configurationLoaderFactory = Objects.requireNonNull(configurationLoaderFactory);
       return this;
     }
 
@@ -154,7 +149,7 @@ public class URLConfigurationFactory {
       return new URLConfigurationFactory(
           fallbackContentRoot,
           Objects.requireNonNull(destContentRoot, "destContentRoot not provided"),
-          Objects.requireNonNull(configurationLoaderBuilder, "configuration loader builder not provided"),
+          Objects.requireNonNull(configurationLoaderFactory, "configuration loader builder not provided"),
           classLoader
       );
     }
