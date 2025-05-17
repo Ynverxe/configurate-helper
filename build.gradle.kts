@@ -9,6 +9,12 @@ repositories {
     mavenCentral()
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
 dependencies {
     compileOnly("org.jetbrains:annotations:24.0.0")
     compileOnly("org.spongepowered:configurate-core:4.0.0")
