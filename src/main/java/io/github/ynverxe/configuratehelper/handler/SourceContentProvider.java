@@ -1,6 +1,6 @@
-package com.github.ynverxe.configuratehelper.handler;
+package io.github.ynverxe.configuratehelper.handler;
 
-import com.github.ynverxe.configuratehelper.handler.content.ContentProvider;
+import io.github.ynverxe.configuratehelper.handler.content.ContentProvider;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;

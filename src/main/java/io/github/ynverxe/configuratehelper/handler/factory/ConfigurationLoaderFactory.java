@@ -1,4 +1,4 @@
-package com.github.ynverxe.configuratehelper.handler.factory;
+package io.github.ynverxe.configuratehelper.handler.factory;
 
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurationNode;

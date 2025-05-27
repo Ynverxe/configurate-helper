@@ -1,12 +1,12 @@
-package com.github.ynverxe.configuratehelper.handler;
+package io.github.ynverxe.configuratehelper.handler;
 
-import com.github.ynverxe.configuratehelper.handler.content.ContentProvider;
-import com.github.ynverxe.configuratehelper.handler.content.ContentChannel;
+import io.github.ynverxe.configuratehelper.handler.content.ContentProvider;
+import io.github.ynverxe.configuratehelper.handler.content.ContentChannel;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-import com.github.ynverxe.configuratehelper.handler.factory.ConfigurationLoaderFactory;
+import io.github.ynverxe.configuratehelper.handler.factory.ConfigurationLoaderFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;

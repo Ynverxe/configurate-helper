@@ -1,9 +1,9 @@
-package com.github.ynverxe.configuratehelper.handler.source;
+package io.github.ynverxe.configuratehelper.handler.source;
 
-import com.github.ynverxe.configuratehelper.handler.FastConfiguration;
-import com.github.ynverxe.configuratehelper.handler.content.ContentChannel;
-import com.github.ynverxe.configuratehelper.handler.content.ContentProvider;
-import com.github.ynverxe.configuratehelper.handler.factory.ConfigurationLoaderFactory;
+import io.github.ynverxe.configuratehelper.handler.FastConfiguration;
+import io.github.ynverxe.configuratehelper.handler.content.ContentChannel;
+import io.github.ynverxe.configuratehelper.handler.content.ContentProvider;
+import io.github.ynverxe.configuratehelper.handler.factory.ConfigurationLoaderFactory;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;

@@ -1,4 +1,4 @@
-package com.github.ynverxe.configuratehelper.handler.content;
+package io.github.ynverxe.configuratehelper.handler.content;
 
 import java.io.IOException;
 import java.io.OutputStream;
