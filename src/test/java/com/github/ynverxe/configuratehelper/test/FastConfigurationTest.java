@@ -1,12 +1,12 @@
 package com.github.ynverxe.configuratehelper.test;
 
-import com.github.ynverxe.configuratehelper.handler.FastConfiguration;
+import io.github.ynverxe.configuratehelper.handler.FastConfiguration;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-import com.github.ynverxe.configuratehelper.handler.source.URLConfigurationFactory;
+import io.github.ynverxe.configuratehelper.handler.source.URLConfigurationFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
