@@ -45,6 +45,11 @@ publishing {
                     name = "Staging"
                 }
             }
+
+            groupId = project.group.toString()
+            artifactId = project.name
+            version = project.version.toString()
+
             pom {
                 name = "configurate-helper"
                 description = "An utility library for https://github.com/SpongePowered/Configurate"
