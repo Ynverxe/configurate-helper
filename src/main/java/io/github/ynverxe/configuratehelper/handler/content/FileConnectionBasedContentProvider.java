@@ -2,6 +2,8 @@ package io.github.ynverxe.configuratehelper.handler.content;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,12 +23,18 @@ public class FileConnectionBasedContentProvider extends URLConnectionBasedConten
    */
   @Override
   public @NotNull OutputStream outputStream() throws IOException {
-    Path path = Paths.get(urlToContent.getFile());
-    if (!Files.exists(path)) {
-      Files.createDirectories(path.getParent());
-      Files.createFile(path);
-    }
+    try {
+      URI uri = this.urlToContent.toURI();
+      Path path = Paths.get(uri);
 
-    return Files.newOutputStream(Paths.get(urlToContent.getPath()));
+      if (!Files.exists(path)) {
+        Files.createDirectories(path.getParent());
+        Files.createFile(path);
+      }
+
+      return Files.newOutputStream(path);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
