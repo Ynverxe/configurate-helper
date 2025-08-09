@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "io.github.ynverxe"
-version = "1.0.1"
+version = "1.2.0"
 
 repositories {
     mavenCentral()
