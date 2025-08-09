@@ -58,6 +58,19 @@ public class FastConfigurationTest {
     assertEquals(FALLBACK_NODE_EXPECT, configuration.node());
   }
 
+  @Test
+  @Order(3)
+  public void assertNodeLoadAndWrite() throws IOException {
+    ConfigurationNode inFileSystem = FACTORY.loadConfigurationInFilesystem("configuration.yml")
+        .get();
+
+    ConfigurationNode inClassLoader = FACTORY.loadConfigurationFromResource("fallback.yaml")
+        .get();
+
+    assertEquals(FALLBACK_NODE_EXPECT, inClassLoader);
+    assertEquals(FALLBACK_NODE_EXPECT, inFileSystem);
+  }
+
   @AfterAll
   public static void clear() throws IOException {
     new File("src/test/java/out").delete();

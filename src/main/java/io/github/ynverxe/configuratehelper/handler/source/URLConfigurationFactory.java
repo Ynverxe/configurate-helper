@@ -8,9 +8,15 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.loader.AbstractConfigurationLoader;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -42,6 +48,75 @@ public class URLConfigurationFactory {
     this.classLoader = classLoader;
   }
 
+  public @NotNull Optional<ConfigurationNode> loadConfigurationInFilesystem(@NotNull String relativePath) throws IOException {
+    return loadConfigurationInFilesystem(Paths.get(relativePath));
+  }
+
+  public @NotNull Optional<ConfigurationNode> loadConfigurationInFilesystem(@NotNull Path relativePath) throws IOException {
+    Path absolutePath = this.destContentRoot.resolve(relativePath);
+
+    if (!Files.exists(absolutePath))
+      return Optional.empty();
+
+    AbstractConfigurationLoader<? extends ConfigurationNode> loader = this.configurationLoaderFactory.create()
+        .path(absolutePath)
+        .build();
+
+    return Optional.of(loader.load());
+  }
+
+  public void saveConfigurationNodeInFilesystem(@NotNull Path relativePath, @NotNull ConfigurationNode node) throws IOException {
+    Path absolutePath = this.destContentRoot.resolve(relativePath);
+
+    AbstractConfigurationLoader<? extends ConfigurationNode> loader = this.configurationLoaderFactory.create()
+        .path(absolutePath)
+        .build();
+
+    loader.save(node);
+  }
+
+  public void saveConfigurationNodeInFilesystem(@NotNull String relativePath, @NotNull ConfigurationNode node) throws IOException {
+    saveConfigurationNodeInFilesystem(Paths.get(relativePath), node);
+  }
+
+  public @NotNull Optional<ConfigurationNode> loadConfigurationFromResource(@NotNull Path relativePath) throws IOException {
+    Objects.requireNonNull(this.classLoader, "No ClassLoader provided");
+
+    Path absolutePath = this.fallbackContentRoot.resolve(relativePath);
+    URL urlToResource = this.classLoader.getResource(absolutePath.toString());
+
+    if (urlToResource == null) {
+      return Optional.empty();
+    }
+
+    return retrieveAndLoadConfiguration(urlToResource);
+  }
+
+  public @NotNull Optional<ConfigurationNode> loadConfigurationFromResource(@NotNull String relativePath) throws IOException {
+    return loadConfigurationFromResource(Paths.get(relativePath));
+  }
+
+  public @NotNull Optional<ConfigurationNode> retrieveAndLoadConfiguration(@NotNull URL url) throws IOException {
+    ContentProvider provider = ContentChannel.create(url);
+
+    InputStream stream = provider.inputStream();
+    if (stream == null) {
+      return Optional.empty();
+    }
+
+    AbstractConfigurationLoader<? extends ConfigurationNode> loader = this.configurationLoaderFactory.create()
+        .source(() -> new BufferedReader(new InputStreamReader(stream)))
+        .build();
+
+    try {
+      return Optional.of(loader.load());
+    } finally {
+      stream.close();
+    }
+  }
+
+  @Deprecated
+  @ApiStatus.ScheduledForRemoval
   public @NotNull FastConfiguration create(@Nullable Path pathToFallbackContent, @NotNull Path destContentPath) throws IllegalStateException, IOException {
     ContentProvider fallbackContent = null;
     ContentChannel destContent = ContentChannel.create(destContentRoot.resolve(destContentPath).toUri().toURL());
@@ -63,6 +138,8 @@ public class URLConfigurationFactory {
     return new FastConfiguration(destContent, fallbackContent, configurationLoaderFactory);
   }
 
+  @Deprecated
+  @ApiStatus.ScheduledForRemoval
   public @NotNull FastConfiguration create(@Nullable String pathToFallbackContent, @NotNull String destContentPath) throws IllegalStateException, IOException {
     return create(pathToFallbackContent != null ? Paths.get(pathToFallbackContent) : null, Paths.get(destContentPath));
   }

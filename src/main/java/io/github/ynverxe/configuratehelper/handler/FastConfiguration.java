@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 import io.github.ynverxe.configuratehelper.handler.factory.ConfigurationLoaderFactory;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -18,6 +19,8 @@ import org.spongepowered.configurate.loader.AbstractConfigurationLoader;
  * An extendable helper class to load/save {@link ConfigurationNode}
  * from/to a file more easily.
  */
+@Deprecated
+@ApiStatus.ScheduledForRemoval
 public class FastConfiguration {
 
   private final @NotNull ContentChannel destinationContentProvider;

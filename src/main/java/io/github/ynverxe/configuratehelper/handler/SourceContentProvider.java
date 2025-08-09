@@ -6,13 +6,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.concurrent.Callable;
+
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
+@Deprecated
 @Internal
+@ApiStatus.ScheduledForRemoval
 public class SourceContentProvider implements Callable<BufferedReader> {
 
   private final @NotNull ContentProvider destinationContentProvider;
